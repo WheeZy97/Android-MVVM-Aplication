@@ -1,30 +1,31 @@
 package com.alex.microprojectmvvm.presentation.ui.matches
 
 import android.view.View
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.alex.microprojectmvvm.api.service.FootballService
-import com.alex.microprojectmvvm.manager.RealmDataManager
-import com.alex.microprojectmvvm.model.realm.FootballMatch
+import com.alex.microprojectmvvm.model.database.AppDatabase
+import com.alex.microprojectmvvm.model.FootballMatch
 import com.alex.microprojectmvvm.presentation.adapter.FootballMatchesAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import io.realm.RealmResults
-import javax.inject.Inject
 
-class FootballMatchesViewModel(private val footballApi: FootballService, private val realmDataManager: RealmDataManager,
+
+class FootballMatchesViewModel(private val footballApi: FootballService, private val appDatabase: AppDatabase,
                                 private val compositeDisposable: CompositeDisposable) : ViewModel() {
 
-    val footballMatchesAdapter: FootballMatchesAdapter
-    val footballMatches: RealmResults<FootballMatch>
+    val errorMessage: MutableLiveData<String> = MutableLiveData()
+    val footballMatchesLiveData: LiveData<List<FootballMatch>>
 
-    val errorMessage:MutableLiveData<String> = MutableLiveData()
+    val footballMatchesAdapter: FootballMatchesAdapter
+
     val errorClickListener = View.OnClickListener { fetchFootballMatchesData() }
 
     init {
-        footballMatches = realmDataManager.getFootballMatches()
-        footballMatchesAdapter = FootballMatchesAdapter(footballMatches)
+        footballMatchesAdapter = FootballMatchesAdapter(listOf())
+        footballMatchesLiveData = appDatabase.footballMatchDao().getMatchesList()
     }
 
     fun fetchFootballMatchesData() {
@@ -35,7 +36,9 @@ class FootballMatchesViewModel(private val footballApi: FootballService, private
                 onRetrieveFootballMatchesStart()
             }
             .subscribe({ footballMatches ->
-                realmDataManager.saveFootballMatchesToRealm(footballMatches)
+                appDatabase.queryExecutor.execute {
+                    appDatabase.footballMatchDao().insertMatches(footballMatches)
+                }
             }, {
                 onRetrieveFootballMatchesListError(it)
             })

@@ -7,14 +7,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.alex.microprojectmvvm.R
 import com.alex.microprojectmvvm.consts.IntentVar
-import com.alex.microprojectmvvm.model.realm.FootballMatch
+import com.alex.microprojectmvvm.model.FootballMatch
 import com.alex.microprojectmvvm.presentation.ui.match.FootballMatchInfoActivity
 import com.alex.microprojectmvvm.util.MicroImage
-import io.realm.OrderedRealmCollection
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.rv_football_match_item.*
 
-class FootballMatchesAdapter(private var itemList: OrderedRealmCollection<FootballMatch>)
+class FootballMatchesAdapter(private var itemList: List<FootballMatch>)
     : RecyclerView.Adapter<FootballMatchesAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -30,6 +29,11 @@ class FootballMatchesAdapter(private var itemList: OrderedRealmCollection<Footba
 
     override fun getItemCount(): Int {
         return itemList.count()
+    }
+
+    fun addFootballMatches(itemList: List<FootballMatch>) {
+        this.itemList = itemList
+        notifyDataSetChanged()
     }
 
     class ViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {

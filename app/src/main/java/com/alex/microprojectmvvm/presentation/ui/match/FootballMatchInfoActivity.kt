@@ -6,21 +6,24 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.alex.microprojectmvvm.MicroApplication
 import com.alex.microprojectmvvm.R
 import com.alex.microprojectmvvm.consts.IntentVar
-import com.alex.microprojectmvvm.manager.RealmDataManager
-import com.alex.microprojectmvvm.model.realm.FootballMatch
+import com.alex.microprojectmvvm.model.FootballMatch
 import com.alex.microprojectmvvm.util.MicroImage
 import kotlinx.android.synthetic.main.activity_football_match_info.*
 import javax.inject.Inject
 
+
 class FootballMatchInfoActivity : AppCompatActivity() {
 
-    private var footballMatch: FootballMatch? = null
+    private lateinit var viewModel: FootballMatchInfoViewModel
 
     @Inject
-    lateinit var realmDataManager: RealmDataManager
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,16 +32,22 @@ class FootballMatchInfoActivity : AppCompatActivity() {
 
         val footballMatchName = intent.getStringExtra(IntentVar.FOOTBALL_MATCH_NAME)
         initToolbar()
-        footballMatch = realmDataManager.getFootballMatch(footballMatchName)
 
-        initViews(footballMatch)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(FootballMatchInfoViewModel::class.java).apply {
+            setTitle(footballMatchName)
+            retrieveFootballMatchInfoFromAppDatabase()
+        }
+
+        viewModel.footballMatch.observe(this, Observer { footballMatch: FootballMatch? ->
+            initViews(footballMatch)
+        })
 
         team_one_link.setOnClickListener {
-            startLinkInBrowser(footballMatch?.side1?.url)
+            startLinkInBrowser(viewModel.footballMatch.value?.side1?.url)
         }
 
         team_two_link.setOnClickListener {
-            startLinkInBrowser(footballMatch?.side2?.url)
+            startLinkInBrowser(viewModel.footballMatch.value?.side2?.url)
         }
     }
 

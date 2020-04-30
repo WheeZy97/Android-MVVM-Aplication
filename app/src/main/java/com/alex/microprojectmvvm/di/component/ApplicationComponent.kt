@@ -8,7 +8,7 @@ import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [RemoteModule::class, RealmModule::class, DisposableModule::class, ViewModelModule::class])
+@Component(modules = [RemoteModule::class, RoomModule::class, DisposableModule::class, ViewModelModule::class])
 interface ApplicationComponent {
     fun inject(activity: FootballMatchInfoActivity)
     fun inject(activity: FootballMatchesActivity)

@@ -3,7 +3,7 @@ package com.alex.microprojectmvvm
 import android.app.Application
 import com.alex.microprojectmvvm.di.component.ApplicationComponent
 import com.alex.microprojectmvvm.di.component.DaggerApplicationComponent
-import com.alex.microprojectmvvm.di.module.ViewModelModule
+import com.alex.microprojectmvvm.di.module.RoomModule
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
@@ -19,8 +19,13 @@ class MicroApplication : Application() {
         initRealm()
     }
 
+    private fun createRoomModule() : RoomModule =
+        RoomModule(applicationContext)
+
     private fun initApplicationComponent() {
-        applicationComponent = DaggerApplicationComponent.create()
+        applicationComponent = DaggerApplicationComponent.builder()
+            .roomModule(createRoomModule())
+            .build()
     }
 
     private fun initRealm() {

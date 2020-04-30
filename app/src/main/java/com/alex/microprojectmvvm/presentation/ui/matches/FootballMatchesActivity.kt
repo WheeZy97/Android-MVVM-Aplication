@@ -15,6 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_football_matches.*
 import javax.inject.Inject
 
+
 class FootballMatchesActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFootballMatchesBinding
@@ -43,10 +44,9 @@ class FootballMatchesActivity : AppCompatActivity() {
             else
                 hideError()
         })
-
-        viewModel.footballMatches.addChangeListener { t, changeSet ->
-            rv_football_matches.adapter?.notifyDataSetChanged()
-        }
+        viewModel.footballMatchesLiveData.observe(this, Observer { footballMatches ->
+            viewModel.footballMatchesAdapter.addFootballMatches(footballMatches)
+        })
 
         binding.viewModel = viewModel
     }
@@ -59,10 +59,5 @@ class FootballMatchesActivity : AppCompatActivity() {
         errorSnackbar = Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_INDEFINITE)
         errorSnackbar?.setAction(R.string.retry, viewModel.errorClickListener)
         errorSnackbar?.show()
-    }
-
-    override fun onDestroy() {
-        viewModel.footballMatches.removeAllChangeListeners()
-        super.onDestroy()
     }
 }

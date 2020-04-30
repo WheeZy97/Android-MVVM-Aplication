@@ -1,9 +1,8 @@
-# Android application with Kotlin, MVVM, Dagger2, RxJava, Retrofit, Realm
+# Android application with Kotlin, MVVM, Dagger2, RxJava, Retrofit, Room database
 
 # Example's Feature:
 - Load data about actual football matches using Retrofit2
-- Use LiveData and Realm
-- ViewModel tests are written
+- Use LiveData and Room database
 
 # Technology Stack
 Language 
@@ -13,10 +12,10 @@ Architectural Pattern
 - MVVM
 
 Database
-- Realm
+- Room database
 
 Libraries
-- Realm
+- Room database
 - Dagger2
 - RxJava
 - Retrofit
